@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý Sinh viên | Bảng điều khiển</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- admin-lte 4.0.0-beta2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        .app-content-header { padding: 1.5rem 0; }
+        .student-table th { background: #f8f9fa; }
+        .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important; }
+    </style>
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+        <!-- Navbar -->
+        <nav class="app-header navbar navbar-expand bg-body">
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="fa-solid fa-bars"></i></a>
+                    </li>
+                    <li class="nav-item d-none d-md-block">
+                        <a href="/" class="nav-link">Trang chủ</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+            <div class="sidebar-brand">
+                <a href="/" class="brand-link">
+                    <span class="brand-text fw-light">Quản lý Sinh viên</span>
+                </a>
+            </div>
+            <div class="sidebar-wrapper">
+                <nav class="mt-2">
+                    <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link active">
+                                <i class="nav-icon fa-solid fa-graduation-cap"></i>
+                                <p>Sinh viên</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="app-main">
+            <div class="app-content-header">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="mb-0">Quản lý Sinh viên</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-content">
+                <div class="container-fluid">
+                    <!-- Search and Action Card -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8 mb-3 mb-md-0">
+                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="resetForm()">
+                                        <i class="fa-solid fa-plus me-1"></i> Thêm sinh viên mới
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên..." aria-label="Tìm kiếm">
+                                        <button class="btn btn-primary" type="button" onclick="searchStudents()">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Card -->
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title">Danh sách Sinh viên</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 student-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Họ và Tên</th>
+                                            <th>Email</th>
+                                            <th>Tuổi</th>
+                                            <th class="text-end">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody">
+                                        <!-- Dữ liệu sẽ được tải ở đây -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentModalLabel">Thông tin Sinh viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="studentForm">
+                        <input type="hidden" id="studentId">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Họ và Tên</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Địa chỉ Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="age" class="form-label">Tuổi</label>
+                            <input type="number" class="form-control" id="age" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="saveStudent()">Lưu thay đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const apiBase = '/api/students';
+
+        document.addEventListener('DOMContentLoaded', loadStudents);
+
+        async function loadStudents() {
+            try {
+                const response = await fetch(apiBase);
+                const students = await response.json();
+                renderTable(students);
+            } catch (error) {
+                console.error('Lỗi khi tải danh sách:', error);
+            }
+        }
+
+        async function searchStudents() {
+            const name = document.getElementById('searchInput').value;
+            if (!name) {
+                loadStudents();
+                return;
+            }
+            try {
+                const response = await fetch(`${apiBase}/search?name=${encodeURIComponent(name)}`);
+                const students = await response.json();
+                renderTable(students);
+            } catch (error) {
+                console.error('Lỗi khi tìm kiếm:', error);
+            }
+        }
+
+        function renderTable(students) {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            students.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.id}</td>
+                        <td class="fw-bold">${s.name}</td>
+                        <td>${s.email}</td>
+                        <td>${s.age}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary" onclick="editStudent(${s.id})" title="Sửa">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger ms-1" onclick="deleteStudent(${s.id})" title="Xóa">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentModalLabel').innerText = 'Thêm sinh viên mới';
+        }
+
+        async function editStudent(id) {
+            try {
+                const response = await fetch(`${apiBase}/${id}`);
+                const s = await response.json();
+                document.getElementById('studentId').value = s.id;
+                document.getElementById('name').value = s.name;
+                document.getElementById('email').value = s.email;
+                document.getElementById('age').value = s.age;
+                document.getElementById('studentModalLabel').innerText = 'Chỉnh sửa sinh viên';
+                new bootstrap.Modal(document.getElementById('studentModal')).show();
+            } catch (error) {
+                console.error('Lỗi khi lấy thông tin sinh viên:', error);
+            }
+        }
+
+        async function saveStudent() {
+            const id = document.getElementById('studentId').value;
+            const student = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                age: document.getElementById('age').value
+            };
+
+            const url = id ? `${apiBase}/update/${id}` : apiBase;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(student)
+                });
+
+                if (response.ok) {
+                    Swal.fire('Thành công!', id ? 'Cập nhật thành công.' : 'Đã thêm sinh viên mới.', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
+                    loadStudents();
+                }
+            } catch (error) {
+                Swal.fire('Lỗi!', 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
+            }
+        }
+
+        async function deleteStudent(id) {
+            const result = await Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Bạn sẽ không thể hoàn tác hành động này!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`${apiBase}/delete/${id}`, { method: 'POST' });
+                    if (response.ok) {
+                        Swal.fire('Đã xóa!', 'Sinh viên đã được xóa khỏi danh sách.', 'success');
+                        loadStudents();
+                    }
+                } catch (error) {
+                    Swal.fire('Lỗi!', 'Không thể xóa sinh viên.', 'error');
+                }
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') searchStudents();
+        });
+    </script>
+</body>
+</html>
